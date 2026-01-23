@@ -1,0 +1,39 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    uses: ./.github/workflows/build-test.yml
+    with:
+      java-version: '17'
+
+  build-and-push-docker:
+    name: Build and Push Docker Image
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/docker.yml
+    with:
+      version: ${{ needs.build-and-test.outputs.version }}
+      registry: ghcr.io
+      image-name: ${{ github.repository }}
+    permissions:
+      contents: write
+      packages: write
+
+  generate-api-docs:
+    name: Generate API Documentation
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/api-docs.yml
+    with:
+      java-version: '17'

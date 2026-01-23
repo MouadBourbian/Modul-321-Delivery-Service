@@ -1,0 +1,56 @@
+name: Generate API Documentation
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        description: 'Java version to use'
+        required: false
+        type: string
+        default: '17'
+
+jobs:
+  generate-api-docs:
+    name: Generate API Documentation
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ inputs.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build application
+        run: mvn package -DskipTests -B
+
+      - name: Start application in background
+        run: |
+          java -jar target/delivery-service-*.jar &
+          echo $! > app.pid
+          sleep 30
+
+      - name: Download OpenAPI spec
+        run: |
+          curl -s http://localhost:8083/api/v1/api-docs -o openapi.json || echo "Failed to fetch OpenAPI spec"
+
+      - name: Stop application
+        run: |
+          if [ -f app.pid ]; then
+            kill $(cat app.pid) 2>/dev/null || true
+          fi
+
+      - name: Upload OpenAPI spec
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: openapi-spec
+          path: openapi.json
+          retention-days: 30
