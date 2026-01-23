@@ -12,7 +12,7 @@
 
   <groupId>com.pizza</groupId>
   <artifactId>delivery-service</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <name>Delivery Service</name>
   <description>Delivery and Notification Service for Pizza Delivery Platform</description>
 
