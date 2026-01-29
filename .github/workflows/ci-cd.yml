@@ -14,6 +14,9 @@ jobs:
   build-and-test:
     name: Build and Test
     uses: ./.github/workflows/build-test.yml
+    permissions:
+      contents: read
+      packages: read
     with:
       java-version: '17'
 
@@ -21,7 +24,7 @@ jobs:
     name: Build and Push Docker Image
     needs: build-and-test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/docker.yml
+    uses: ./.github/workflows/delivery-service-docker.yml
     with:
       version: ${{ needs.build-and-test.outputs.version }}
       registry: ghcr.io
@@ -29,11 +32,3 @@ jobs:
     permissions:
       contents: write
       packages: write
-
-  generate-api-docs:
-    name: Generate API Documentation
-    needs: build-and-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/api-docs.yml
-    with:
-      java-version: '17'

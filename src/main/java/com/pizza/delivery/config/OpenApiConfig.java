@@ -26,9 +26,6 @@ public class OpenApiConfig {
                                 + "This service manages pizza deliveries, tracks delivery status, and provides "
                                 + "real-time updates on order deliveries.")
                         .version("1.0.0")
-                        .contact(new Contact()
-                                .name("Pizza Platform Team")
-                                .email("support@pizza-platform.local"))
                         .license(new License()
                                 .name("MIT License")
                                 .url("https://opensource.org/licenses/MIT")))
