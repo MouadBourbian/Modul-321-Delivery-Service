@@ -1,4 +1,4 @@
-package com.pizza.delivery.model;
+package com.pizza.models;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -59,40 +59,89 @@ For detailed architecture documentation, see [ARCHITECTURE.md](./ARCHITECTURE.md
 - Java 17 or higher
 - Maven 3.9+
 - RabbitMQ Server (or Docker)
+- GitHub Personal Access Token with `read:packages` scope (for building)
+
+You can create a token from [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens).
 
 ### Local Development
 
-1. **Start RabbitMQ** (with Docker):
+> [!NOTE]  
+> This guide assumes you are running the project within the Dev Container.
+
+1. **Configure Maven authentication** (`~/.m2/settings.xml`):
+
+   ```xml
+   <settings>
+     <servers>
+       <server>
+         <id>github</id>
+         <username>YOUR_GITHUB_USERNAME</username>
+         <password>YOUR_GITHUB_TOKEN</password>
+       </server>
+     </servers>
+   </settings>
+   ```
+
+2. **Start RabbitMQ** (with Docker):
 
    ```bash
    docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-management
    ```
 
-2. **Build and run the service**:
+3. **Build and run the service**:
 
    ```bash
    mvn clean package
    java -jar target/delivery-service-1.0.0.jar
    ```
 
-3. **Verify the service is running**:
+4. **Verify the service is running**:
+
    ```bash
    curl http://localhost:8083/api/v1/deliveries/health
    ```
 
 ### Docker Deployment
 
-```bash
-# Build the image
-docker build -t delivery-service:latest .
+1. **Create secret files** with your GitHub credentials:
 
-# Run the container
-docker run -d \
-  -p 8083:8083 \
-  -e SPRING_RABBITMQ_HOST=rabbitmq \
-  --name delivery-service \
-  delivery-service:latest
-```
+   Create `./github_actor.secret` containing:
+
+   ```plaintext
+   YOUR_GITHUB_USERNAME
+   ```
+
+   Create `./github_token.secret` containing:
+
+   ```plaintext
+   YOUR_GITHUB_TOKEN
+   ```
+
+2. **Build the Docker image**:
+
+   ```bash
+   docker buildx build \
+     --secret id=GITHUB_ACTOR,src=./github_actor.secret \
+     --secret id=GITHUB_TOKEN,src=./github_token.secret \
+     -t delivery-service:latest \
+     .
+   ```
+
+3. **Clean up secret files**:
+
+   ```bash
+   rm ./github_actor.secret ./github_token.secret
+   ```
+
+4. **Run the Docker container**:
+
+   ```bash
+   docker run -d \
+     -p 8083:8083 \
+     -e SPRING_RABBITMQ_HOST=rabbitmq \
+     --name delivery-service \
+     delivery-service:latest
+   ```
 
 ## API Documentation
 

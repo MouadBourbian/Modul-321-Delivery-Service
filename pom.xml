@@ -12,7 +12,7 @@
 
   <groupId>com.pizza</groupId>
   <artifactId>delivery-service</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <name>Delivery Service</name>
   <description>Delivery and Notification Service for Pizza Delivery Platform</description>
 
@@ -22,7 +22,22 @@
     <jacoco.version>0.8.11</jacoco.version>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/simonstreuli/321-monorepo</url>
+    </repository>
+  </repositories>
+
   <dependencies>
+    <!-- Pizza Models Library from GitHub Packages -->
+    <dependency>
+      <groupId>com.pizza</groupId>
+      <artifactId>pizza-models</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+
     <!-- Spring Boot AMQP (RabbitMQ) -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

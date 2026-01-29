@@ -20,6 +20,11 @@ jobs:
 
     permissions:
       contents: read
+      packages: read
+
+    env:
+      GITHUB_ACTOR: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     outputs:
       version: ${{ steps.get-version.outputs.version }}
@@ -36,6 +41,9 @@ jobs:
           java-version: ${{ inputs.java-version }}
           distribution: 'temurin'
           cache: 'maven'
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
 
       - name: Get version from pom.xml
         id: get-version
