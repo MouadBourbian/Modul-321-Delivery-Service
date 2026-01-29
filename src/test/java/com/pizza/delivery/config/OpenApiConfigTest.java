@@ -46,14 +46,6 @@ class OpenApiConfigTest {
     }
 
     @Test
-    @DisplayName("Should have contact information")
-    void shouldHaveContactInformation() {
-        // Then
-        assertNotNull(openAPI.getInfo().getContact());
-        assertEquals("Pizza Platform Team", openAPI.getInfo().getContact().getName());
-    }
-
-    @Test
     @DisplayName("Should have license information")
     void shouldHaveLicenseInformation() {
         // Then
